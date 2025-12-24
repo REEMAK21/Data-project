@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 
+
 def enforce_schema(df: pd.DataFrame)-> pd.DataFrame:
     return df.assign(
     order_id=df["order_id"].astype("string"),
@@ -69,4 +70,45 @@ def apply_mapping(s: pd.Series, mapping: dict[str, str])->pd.Series:
 
 
 
-add_missing_flags,dedupe_keep_latest,apply_mapping,normalize_text
+def parse_datetime(df, col:str,utc=True)-> pd.DataFrame:
+    dt = pd.to_datetime(df[col], errors="coerce", utc=utc)
+    return df.assign(**{col: dt})
+
+       
+
+
+
+def add_time_parts(df, ts_col)-> pd.DataFrame:
+     times= df[ts_col]
+     return df.assign( dates=times.dt.date ,month=times.dt.to_period("M").astype("string"),
+           year=times.dt.year, day_week=times.dt.day_name(), hour=times.dt.hour,)
+
+
+def iqr_bounds(sre:pd.Series, k=1.5):
+    c=sre.dropna()
+    q1=c.quantile(0.25)
+    q3=c.quantile(0.75)
+    iqr=q3-q1
+    lower = q1 - (k * iqr)
+    upper = q3 + (k * iqr)
+
+    return lower ,upper
+
+
+def winsorize(s, low=0.01, hi=0.99):
+    clean_s=s.dropna()
+    a,b =clean_s.quantile(low), clean_s.quantile(hi)
+    return s.clip(lower=low , upper=b)
+
+def add_outlier_flag(df,col,k=1.5):
+    n_col=df[col]
+    lower,higer=iqr_bounds(n_col, k=k)
+    return df.assign(**{f"{col}_is_outlier": (n_col<lower) | (n_col>higer)})
+
+
+
+
+      
+
+      
+

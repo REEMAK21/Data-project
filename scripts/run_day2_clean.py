@@ -15,8 +15,12 @@ paths=make_paths(ROOT)
 data_path=paths.raw/"orders.csv"
 data_path2=paths.raw/"users.csv"
 
-out_path=paths.reports/"orders_clean.parquet"
+out_path_order_miss=paths.reports/"missingness_orders.csv"
 
+out_path_order_par=paths.processed/"orders.parquet"
+
+out_path_users_par=paths.processed/"users.parquet"
+out_path_order_clean_par=paths.processed/"orders_clean.parquet"
 
 
 
@@ -28,9 +32,25 @@ Data_f2=read_users_csv(data_path2)
 
 
 
-order_columns= Data_f[["quantity","amount"]]
-Data_f_update =  add_missing_flags(Data_f ,["amount", "quantity"]
-)
+
+require_columns(Data_f,['order_id','user_id','amount','quantity','created_at','status'])
+require_columns(Data_f2,['user_id','country','signup_date'
+])
+
+
+assert_non_empty(Data_f, "orders_clean")
+assert_non_empty(Data_f2, "users")
+
+
+enforce_schema(Data_f)
+
+
+write_parquet(Data_f2,out_path_users_par)
+
+write_parquet(Data_f,out_path_order_par)
+
+missingness_report_df=missingness_report(Data_f) #write out as csv in this path out_path_order_miss
+missingness_report_df.to_csv(out_path_order_miss, index=True)
 
 
 mapping = {
@@ -46,11 +66,16 @@ mapping = {
 
 
 
-Data_f_update["status_clean"] = apply_mapping(
-    normalize_text(Data_f_update["status"]),
+Data_f["status_clean"] = apply_mapping(
+    normalize_text(Data_f["status"]),
     mapping
+)
+
+order_columns= Data_f[["quantity","amount"]]
+Data_f_update =  add_missing_flags(Data_f ,["amount", "quantity"]
 )
 
 
 
-write_parquet(Data_f_update ,out_path)
+
+write_parquet(Data_f_update ,out_path_order_clean_par)
