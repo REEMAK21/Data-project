@@ -77,6 +77,6 @@ country_stats = (
 # small table to terminal
 print(country_stats.head())
 
-# Save 
-reports_path = paths.reports / "revenue_by_country.csv"
+
+reports_path = paths.reports /"revenue_by_country.csv"
 country_stats.to_csv(reports_path, index=False)
