@@ -55,11 +55,11 @@ week2-data-work >:python scripts/run_etl.py
 
 
 ## Outputs
- data/processed/orders_clean.parquet
- data/processed/users.parquet
- data/processed/analytics_table.parquet
- data/processed/_run_meta.json
- reports/figures/*.png
+ -data/processed/orders_clean.parquet 
+ -data/processed/users.parquet
+ -data/processed/analytics_table.parquet
+ -data/processed/_run_meta.json
+ -reports/figures/*.png
 
 ## EDA
 Open notebooks/eda.ipynb and run all cells.
