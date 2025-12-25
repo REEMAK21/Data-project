@@ -1,5 +1,5 @@
 
-# doData ETL + EDA Project
+# Data ETL + EDA Project
 
 This project is part of a **milestone in the AI Professionals Bootcamp**. It focuses on **exploratory data analysis (EDA)**,
 **ETL pipelines**, data manipulation with **pandas**, visualization, and developing analytical skills including storytelling from data insights.
